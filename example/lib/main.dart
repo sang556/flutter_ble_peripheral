@@ -5,11 +5,14 @@
  */
 
 // ignore: unnecessary_import
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
+import 'package:flutter_ble_peripheral_example/ble_so_utils.dart';
 
 void main() => runApp(const FlutterBlePeripheralExample());
 
@@ -21,29 +24,121 @@ class FlutterBlePeripheralExample extends StatefulWidget {
       FlutterBlePeripheralExampleState();
 }
 
-class FlutterBlePeripheralExampleState
-    extends State<FlutterBlePeripheralExample> {
+/*Region(
+identifier: 'Cubeacon',
+proximityUUID: '0000ae8f-0000-1000-8000-00805f9b34fb',
+),
+
+Region(
+identifier: 'Cubeacon',
+proximityUUID: '00002a19-0000-1000-8000-00805f9b34fb',
+),
+Region(
+identifier: 'Cubeacon',
+proximityUUID: '0000bb11-0000-1000-8000-00805f9b34fb',
+),
+Region(
+identifier: 'Cubeacon',
+proximityUUID: '0000bb21-0000-1000-8000-00805f9b34fb',
+),
+
+Region(
+identifier: 'Cubeacon',
+proximityUUID: '0000180f-0000-1000-8000-00805f9b34fb',
+),
+Region(
+identifier: 'Cubeacon',
+proximityUUID: '0000aaa0-0000-1000-8000-00805f9b34fb',
+),
+Region(
+identifier: 'Cubeacon',
+proximityUUID: '0000bb10-0000-1000-8000-00805f9b34fb',
+),
+Region(
+identifier: 'Cubeacon',
+proximityUUID: '0000bb20-0000-1000-8000-00805f9b34fb',
+),
+
+Region(
+identifier: 'Cubeacon',
+proximityUUID: '0000aaa1-0000-1000-8000-00805f9b34fb',
+),
+Region(
+identifier: 'Cubeacon',
+proximityUUID: '0000aaa3-0000-1000-8000-00805f9b34fb',
+),*/
+
+class FlutterBlePeripheralExampleState extends State<FlutterBlePeripheralExample> {
+  final methodChannel = const MethodChannel('com.tdl/ble');
+  Random random = Random();
+
+  static final List<Uint8List> gears = [
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -59, 23, 92]),
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -12, 29, 124]),
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -9, -122, 78]),
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -10, 15, 95]),
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -15, -80, 43]),
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -16, 57, 58]),
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -13, -94, 8]),
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -14, 43, 25]),
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -3, -36, -31]),
+    Uint8List.fromList([109, -74, 67, -50, -105, -2, 66, 124, -4, 85, -16]),
+  ];
+
   final AdvertiseData advertiseData = AdvertiseData(
-    serviceUuid: 'bf27730d-860a-4e09-889c-2d8b6a9e0fe7',
-    manufacturerId: 1234,
-    manufacturerData: Uint8List.fromList([1, 2, 3, 4, 5, 6]),
+    serviceUuid: '0000ae8f-0000-1000-8000-00805f9b34fb',
+    manufacturerId: 255,
+    manufacturerData: Uint8List.fromList([0x77, 0x62, 0x4d, 0x53, 0x45, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00]),
+    //manufacturerData: Uint8List.fromList(BleSoUtil.getRFPayload([0x77, 0x62, 0x4d, 0x53, 0x45, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00], [0x77, 0x62, 0x4d, 0x53, 0x45, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00], 11, [])),
   );
 
   final AdvertiseSettings advertiseSettings = AdvertiseSettings(
     advertiseMode: AdvertiseMode.advertiseModeBalanced,
     txPowerLevel: AdvertiseTxPower.advertiseTxPowerMedium,
-    timeout: 3000,
+    timeout: 2500,
+    connectable: true,
   );
 
-  final AdvertiseSetParameters advertiseSetParameters =
-      AdvertiseSetParameters();
+  final AdvertiseSetParameters advertiseSetParameters = AdvertiseSetParameters();
 
   bool _isSupported = false;
 
   @override
-  void initState() {
+   initState() {
     super.initState();
     initPlatformState();
+  }
+
+  Future<void> send(int gear) async {
+    //1.原生Java方式
+    /*sendCmd(mode);
+    return;*/
+    //2.Dart方式
+    //Uint8List? buffer = (await getBleCommand(gear)) as Uint8List?;
+    //debugPrint("buffer: $buffer");
+    final Uint8List buffer = gears[gear];
+    final AdvertiseData advertiseData = createAdvertiseData(65520, buffer);//255
+    if (await FlutterBlePeripheral().isAdvertising) {
+      await FlutterBlePeripheral().stop();
+    }
+    await FlutterBlePeripheral().start(advertiseData: advertiseData, advertiseSettings: advertiseSettings);
+    await Future.delayed(const Duration(milliseconds: 1000), (){});
+    await FlutterBlePeripheral().stop();
+  }
+
+  AdvertiseData createAdvertiseData(int manufacturerId, Uint8List? manufacturerData) {
+    return AdvertiseData(
+      serviceUuid: '0000ae8f-0000-1000-8000-00805f9b34fb',
+      manufacturerId: manufacturerId,
+      manufacturerData: manufacturerData,);
+  }
+
+  Future<List<int>?> getBleCommand(int mode) async {
+    return await methodChannel.invokeMethod<List<int>>('getBleCommand', mode);
+  }
+
+  Future<void> sendCmd(int mode) async {
+    await methodChannel.invokeMethod<String>('sendCmd', mode);
   }
 
   Future<void> initPlatformState() async {
@@ -146,7 +241,10 @@ class FlutterBlePeripheralExampleState
               //     },),
               Text('Current UUID: ${advertiseData.serviceUuid}'),
               MaterialButton(
-                onPressed: _toggleAdvertise,
+                onPressed: () {
+                  final int gear = random.nextInt(10);
+                  send(gear);
+                },
                 child: Text(
                   'Toggle advertising',
                   style: Theme.of(context)

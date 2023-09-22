@@ -109,12 +109,12 @@ class FlutterBlePeripheralExampleState extends State<FlutterBlePeripheralExample
   }
 
   Future<void> send(int gear) async {
-    /*Uint8List? buffer = (await getBleCommand(gear)) as Uint8List?;
+    /*Uint8List? buffer = (await getBleCommand(11)) as Uint8List?;
     debugPrint("buffer: $buffer");*/
 
     //1.原生Java方式
-    sendCmd(gear);
-    return;
+    //sendCmd(gear);
+    //return;
 
     //2.Dart方式
     Uint8List buffer = gears[gear];

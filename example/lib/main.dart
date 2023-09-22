@@ -12,7 +12,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
-import 'package:flutter_ble_peripheral_example/ble_so_utils.dart';
 
 void main() => runApp(const FlutterBlePeripheralExample());
 
@@ -110,13 +109,16 @@ class FlutterBlePeripheralExampleState extends State<FlutterBlePeripheralExample
   }
 
   Future<void> send(int gear) async {
+    /*Uint8List? buffer = (await getBleCommand(gear)) as Uint8List?;
+    debugPrint("buffer: $buffer");*/
+
     //1.原生Java方式
-    /*sendCmd(mode);
-    return;*/
+    sendCmd(gear);
+    return;
+
     //2.Dart方式
-    //Uint8List? buffer = (await getBleCommand(gear)) as Uint8List?;
-    //debugPrint("buffer: $buffer");
-    final Uint8List buffer = gears[gear];
+    Uint8List buffer = gears[gear];
+    //buffer = Uint8List.fromList([0x6D, 0xB6, 0x43, 0xCF, 0x7E, 0x8F, 0x47, 0x11, 0xB0, 0xFA, 0xAC]);
     final AdvertiseData advertiseData = createAdvertiseData(65520, buffer);//255
     if (await FlutterBlePeripheral().isAdvertising) {
       await FlutterBlePeripheral().stop();

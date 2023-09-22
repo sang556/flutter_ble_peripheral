@@ -23,50 +23,6 @@ class FlutterBlePeripheralExample extends StatefulWidget {
       FlutterBlePeripheralExampleState();
 }
 
-/*Region(
-identifier: 'Cubeacon',
-proximityUUID: '0000ae8f-0000-1000-8000-00805f9b34fb',
-),
-
-Region(
-identifier: 'Cubeacon',
-proximityUUID: '00002a19-0000-1000-8000-00805f9b34fb',
-),
-Region(
-identifier: 'Cubeacon',
-proximityUUID: '0000bb11-0000-1000-8000-00805f9b34fb',
-),
-Region(
-identifier: 'Cubeacon',
-proximityUUID: '0000bb21-0000-1000-8000-00805f9b34fb',
-),
-
-Region(
-identifier: 'Cubeacon',
-proximityUUID: '0000180f-0000-1000-8000-00805f9b34fb',
-),
-Region(
-identifier: 'Cubeacon',
-proximityUUID: '0000aaa0-0000-1000-8000-00805f9b34fb',
-),
-Region(
-identifier: 'Cubeacon',
-proximityUUID: '0000bb10-0000-1000-8000-00805f9b34fb',
-),
-Region(
-identifier: 'Cubeacon',
-proximityUUID: '0000bb20-0000-1000-8000-00805f9b34fb',
-),
-
-Region(
-identifier: 'Cubeacon',
-proximityUUID: '0000aaa1-0000-1000-8000-00805f9b34fb',
-),
-Region(
-identifier: 'Cubeacon',
-proximityUUID: '0000aaa3-0000-1000-8000-00805f9b34fb',
-),*/
-
 class FlutterBlePeripheralExampleState extends State<FlutterBlePeripheralExample> {
   final methodChannel = const MethodChannel('com.tdl/ble');
   Random random = Random();
@@ -118,7 +74,7 @@ class FlutterBlePeripheralExampleState extends State<FlutterBlePeripheralExample
 
     //2.Dart方式
     Uint8List buffer = gears[gear];
-    //buffer = Uint8List.fromList([0x6D, 0xB6, 0x43, 0xCF, 0x7E, 0x8F, 0x47, 0x11, 0xB0, 0xFA, 0xAC]);
+    buffer = Uint8List.fromList([0x6D, 0xB6, 0x43, 0xCF, 0x7E, 0x8F, 0x47, 0x11, 0xB0, 0xFA, 0xAC]);
     final AdvertiseData advertiseData = createAdvertiseData(65520, buffer);//255
     if (await FlutterBlePeripheral().isAdvertising) {
       await FlutterBlePeripheral().stop();
@@ -220,7 +176,10 @@ class FlutterBlePeripheralExampleState extends State<FlutterBlePeripheralExample
           title: const Text('Flutter BLE Peripheral'),
         ),
         body: Center(
-          child: Column(
+          child:
+          SingleChildScrollView(
+            child:
+          Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text('Is supported: $_isSupported'),
@@ -388,7 +347,7 @@ class FlutterBlePeripheralExampleState extends State<FlutterBlePeripheralExample
                 ),
               ),
             ],
-          ),
+          ),),
         ),
       ),
     );

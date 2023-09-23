@@ -65,6 +65,8 @@ class FlutterBlePeripheralExampleState extends State<FlutterBlePeripheralExample
   }
 
   Future<void> send(int gear) async {
+    //[109, 182, 67, 206, 151, 254, 66, 124, 244, 29, 124]
+    //[0x6D, 0xB6, 0x43, 0xCE, 0x97, 0xFE, 0x42, 0x7C, 0xF4, 0x1D, 0x7C]
     /*Uint8List? buffer = (await getBleCommand(11)) as Uint8List?;
     debugPrint("buffer: $buffer");*/
 
@@ -75,6 +77,7 @@ class FlutterBlePeripheralExampleState extends State<FlutterBlePeripheralExample
     //2.Dart方式
     Uint8List buffer = gears[gear];
     buffer = Uint8List.fromList([0x6D, 0xB6, 0x43, 0xCF, 0x7E, 0x8F, 0x47, 0x11, 0xB0, 0xFA, 0xAC]);
+    buffer = Uint8List.fromList([0x08, 0xF9, 0x22, 0x49, 0xBA, 0x47, 0xBC, 0xC4, 0xFE, 0xEB, 0x0B]);
     final AdvertiseData advertiseData = createAdvertiseData(65520, buffer);//255
     if (await FlutterBlePeripheral().isAdvertising) {
       await FlutterBlePeripheral().stop();

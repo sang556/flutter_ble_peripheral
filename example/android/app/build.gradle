@@ -27,6 +27,13 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 33
+    ndkVersion "24.0.8215888"
+
+    externalNativeBuild {
+        cmake {
+            version "3.22.1"
+        }
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -37,7 +44,7 @@ android {
 
     defaultConfig {
         applicationId "dev.steenbakker.flutter_ble_peripheral_example"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

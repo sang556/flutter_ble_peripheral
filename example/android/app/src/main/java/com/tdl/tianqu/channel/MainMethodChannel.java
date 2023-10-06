@@ -45,6 +45,7 @@ public class MainMethodChannel implements MethodChannel.MethodCallHandler {
                 break;
             default:
                 result.notImplemented();
+                break;
         }
     }
 }
